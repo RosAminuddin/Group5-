@@ -7,7 +7,7 @@ from step4_email import send_email_alert
 
 
 DEATH_ALERT_THRESHOLD = 1  # demo purpose
-
+TRAINING_MODE = True
 
 def main():
     print("🚀 Pandemic Alert Automation Started")
@@ -23,7 +23,7 @@ def main():
     print("✅ DB saved")
     print(json.dumps(record, indent=2))
 
-    if data["today_deaths"] >= DEATH_ALERT_THRESHOLD:
+    if data["today_deaths"] >= DEATH_ALERT_THRESHOLD or TRAINING_MODE:
         send_email_alert(data)
         print("🚨 Alert email sent")
     else:

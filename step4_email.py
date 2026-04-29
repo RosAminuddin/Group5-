@@ -1,8 +1,13 @@
-import smtplib
+# import smtplib
 import os
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from dotenv import load_dotenv
+# from email.mime.text import MIMEText
+# from email.mime.multipart import MIMEMultipart
+# from dotenv import load_dotenv
+
+
+from jinja2 import Template
+from datetime import datetime
+
 
 from step1_scrap import scrap_data
 
@@ -10,11 +15,11 @@ from step1_scrap import scrap_data
 # ---------------------------------
 # LOAD ENV VARIABLES
 # ---------------------------------
-load_dotenv()
+# load_dotenv()
 
-EMAIL_SENDER = os.getenv("EMAIL_SENDER")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
-EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
+# EMAIL_SENDER = os.getenv("EMAIL_SENDER")
+# EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+# EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
 
 
 # ---------------------------------
@@ -26,12 +31,13 @@ TEMPLATE_FILE = os.path.join(BASE_DIR, "template.html")
 
 def send_email_alert(data: dict) -> bool:
     # Email setup
-    msg = MIMEMultipart("alternative")
-    msg["From"] = EMAIL_SENDER
-    msg["To"] = EMAIL_RECEIVER
-    msg["Subject"] = f"🚨 Pandemic Alert - {data['country']}"
+    # msg = MIMEMultipart("alternative")
+    # msg["From"] = EMAIL_SENDER
+    # msg["To"] = EMAIL_RECEIVER
+    # msg["Subject"] = f"🚨 Pandemic Alert - {data['country']}"
+    
 
-    # Load HTML template
+# Load HTML template
     with open(TEMPLATE_FILE, "r", encoding="utf-8") as file:
         html_content = file.read()
 
@@ -39,14 +45,26 @@ def send_email_alert(data: dict) -> bool:
     for key, value in data.items():
         html_content = html_content.replace(f"{{{{{key}}}}}", str(value))
 
-    msg.attach(MIMEText(html_content, "html"))
+    # Create output folder if it doesn't exist
+    os.makedirs("output", exist_ok=True)
+
+    # Save HTML preview instead of sending email
+    filename = f"output/email_preview_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+    print(f"📄 Email preview generated: {filename}")
+
+   
+
+    # msg.attach(MIMEText(html_content, "html"))
 
     # Send email
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(EMAIL_SENDER, EMAIL_PASSWORD)
-        server.send_message(msg)
+    # with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+    #     server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+    #     server.send_message(msg)
 
-    return True
+    # return True
 
 
 # -------------------
